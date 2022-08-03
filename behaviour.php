@@ -227,6 +227,7 @@ class qbehaviour_immediatemooptcbm extends qbehaviour_immediatemoopt {
             $pendingstep->set_new_response_summary(question_cbm::summary_with_certainty(
                 $this->question->summarise_response($pendingstep->get_all_data()), $certainty));
         }
+        return $status;
     }
 
 
