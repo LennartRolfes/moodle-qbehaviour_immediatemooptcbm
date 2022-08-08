@@ -38,7 +38,7 @@ class walkthrough_test extends \qbehaviour_walkthrough_test_base {
 
         // Create a true-false question with correct answer true.
         $mc = \test_question_maker::make_a_multichoice_single_question();
-        $this->start_attempt_at_question($mc, 'immediatemooptcbm');
+        $this->start_attempt_at_question($mc, 'immediatecbm');
 
         $rightindex = $this->get_mc_right_answer_index($mc);
         $wrongindex = ($rightindex + 1) % 3;
@@ -132,7 +132,7 @@ class walkthrough_test extends \qbehaviour_walkthrough_test_base {
 
         // Create a true-false question with correct answer true.
         $mc = \test_question_maker::make_a_multichoice_single_question();
-        $this->start_attempt_at_question($mc, 'immediatemooptcbm');
+        $this->start_attempt_at_question($mc, 'immediatecbm');
 
         // Check the initial state.
         $this->check_current_state(question_state::$todo);
@@ -185,7 +185,7 @@ class walkthrough_test extends \qbehaviour_walkthrough_test_base {
 
         // Create a short answer question with correct answer true.
         $sa = \test_question_maker::make_question('shortanswer');
-        $this->start_attempt_at_question($sa, 'immediatemooptcbm');
+        $this->start_attempt_at_question($sa, 'immediatecbm');
 
         // Check the initial state.
         $this->check_current_state(question_state::$todo);
@@ -219,7 +219,7 @@ class walkthrough_test extends \qbehaviour_walkthrough_test_base {
 
         // Create a true-false question with correct answer true.
         $mc = \test_question_maker::make_a_multichoice_single_question();
-        $this->start_attempt_at_question($mc, 'immediatemooptcbm');
+        $this->start_attempt_at_question($mc, 'immediatecbm');
 
         // Check the initial state.
         $this->check_current_state(question_state::$todo);
@@ -265,7 +265,7 @@ class walkthrough_test extends \qbehaviour_walkthrough_test_base {
 
         // Create a true-false question with correct answer true.
         $tf = \test_question_maker::make_question('truefalse', 'true');
-        $this->start_attempt_at_question($tf, 'immediatemooptcbm', 2);
+        $this->start_attempt_at_question($tf, 'immediatecbm', 2);
 
         // Verify.
         $this->check_current_state(question_state::$todo);

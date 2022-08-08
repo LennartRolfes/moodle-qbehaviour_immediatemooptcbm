@@ -44,7 +44,7 @@ class behaviour_type_test extends \qbehaviour_walkthrough_test_base {
     }
 
     public function test_is_archetypal() {
-        $this->assertTrue($this->behaviourtype->is_archetypal());
+        $this->assertFalse($this->behaviourtype->is_archetypal());
     }
 
     public function test_get_unused_display_options() {
