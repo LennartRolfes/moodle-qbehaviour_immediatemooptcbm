@@ -152,80 +152,25 @@ class qbehaviour_immediatemooptcbm extends qbehaviour_immediatemoopt {
         return question_attempt::KEEP;
     }
 
-    public function process_finish(question_attempt_pending_step $pendingstep) {
-        global $DB;
-
-        if ($this->qa->get_state()->is_finished()) {
-            return question_attempt::DISCARD;
-        }
-
-        $response = $this->qa->get_last_step()->get_qt_data();
-        if(!$this->question->is_gradable_response($response)){
-            $pendingstep->set_state(question_state::$gaveup);
-            //$pendingstep->set_fraction($this->get_min_fraction());
-        } else {
-            if ($this->question->enablefilesubmissions) {
-                // We are in a regrade.
-                $record = $DB->get_record('question_usages', array('id' => $this->qa->get_usage_id()), 'contextid');
-                $qubacontextid = $record->contextid;
-                $responsefiles = $this->qa->get_last_qt_files('answer', $qubacontextid);
-            }
-
-            if ($this->question->enablefreetextsubmissions) {
-                $autogeneratenames = $this->question->ftsautogeneratefilenames;
-                for ($i = 0; $i < $this->question->ftsmaxnumfields; $i++) {
-                    $text = $response["answertext$i"];
-                    if ($text == '') {
-                        continue;
-                    }
-                    $record = $DB->get_record('qtype_moopt_freetexts',
-                        ['questionid' => $this->question->id, 'inputindex' => $i]);
-                    $filename = $response["answerfilename$i"] ?? '';        // By default use submitted filename.
-                    // Overwrite filename if necessary.
-                    if ($record) {
-                        if ($record->presetfilename) {
-                            $filename = $record->filename;
-                        } else if ($filename == '') {
-                            $tmp = $i + 1;
-                            $filename = "File$tmp.txt";
-                        }
-                    } else if ($autogeneratenames || $filename == '') {
-                        $tmp = $i + 1;
-                        $filename = "File$tmp.txt";
-                    }
-                    $freetextanswers[$filename] = $text;
-                }
-            }
-
-            $state = $this->question->grade_response_asynch($this->qa, $responsefiles ?? [], $freetextanswers ?? []);
-            $pendingstep->set_state($state);
-            $pendingstep->set_new_response_summary($this->question->summarise_response($response));
-            $pendingstep->set_fraction($this->get_min_fraction());
-        }
-
-        return question_attempt::KEEP;
-    }
 
     public function process_gradingresult(question_attempt_pending_step $pendingstep) {
-        $status =  parent::process_gradingresult($pendingstep);
+        $status = parent::process_gradingresult($pendingstep);
 
-//        $responsestep = $this->qa->get_last_step(); //last step initiated the grading, so it´s the step with the response//
-
-        if($status == question_attempt::KEEP){
+        if ($status == question_attempt::KEEP) {
             $fraction = $pendingstep->get_fraction();
-            if ($this->qa->get_last_behaviour_var('certainty') != null){
-                $certainty = $this->qa->get_last_behaviour_var('certainty');
+            if ($this->qa->get_last_step()->has_behaviour_var('certainty')) {
+                $certainty = $this->qa->get_last_step()->get_behaviour_var('certainty');
             } else {
                 $certainty = question_cbm::default_certainty();
                 $pendingstep->set_behaviour_var('_assumedcertainty', $certainty);
             }
 
-            if(!is_null($fraction)){
+            if (!is_null($fraction)) {
                 $pendingstep->set_behaviour_var('_rawfraction', $fraction);
-                $pendingstep->set_fraction(question_cbm::adjust_fraction($fraction,$certainty));
+                $pendingstep->set_fraction(question_cbm::adjust_fraction($fraction, $certainty));
             }
-            $pendingstep->set_new_response_summary(question_cbm::summary_with_certainty(
-                $this->question->summarise_response($pendingstep->get_all_data()), $certainty));
+            $pendingstep->set_new_response_summary(
+                question_cbm::summary_with_certainty($pendingstep->get_new_response_summary(), $certainty));
         }
         return $status;
     }
