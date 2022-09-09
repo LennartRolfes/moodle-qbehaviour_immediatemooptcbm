@@ -26,7 +26,7 @@ require_once(__DIR__ . '/../../../engine/tests/helpers.php');
 
 
 /**
- * Unit tests for the immediate feedback with CBM behaviour for MooPT questions type class.
+ * Unit tests for the immediatemoopt with CBM behaviour type class.
  *
  * @package    qbehaviour_immediatemooptcbm
  * @category   test
